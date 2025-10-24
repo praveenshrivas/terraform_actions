@@ -1,55 +1,22 @@
 pipeline {
     agent any
-
-    environment {
-        TF_WORKSPACE = 'default'
-    }
-
     stages {
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
-                echo "Cloning repository..."
                 checkout scm
             }
         }
 
-        stage('Init Terraform') {
+        stage('Terraform Init') {
             steps {
-                sh '''
-                    terraform init
-                '''
+                sh 'terraform init'
             }
         }
 
-        stage('Validate Terraform') {
+        stage('Terraform Plan') {
             steps {
-                sh '''
-                    terraform validate
-                '''
+                sh 'terraform plan'
             }
-        }
-
-        stage('Plan Infrastructure') {
-            steps {
-                sh '''
-                    terraform plan -out=tfplan
-                '''
-            }
-        }
-
-        stage('Apply Infrastructure') {
-            steps {
-                input message: "Proceed with apply?"
-                sh '''
-                    terraform apply -auto-approve tfplan
-                '''
-            }
-        }
-    }
-
-    post {
-        always {
-            echo "Pipeline completed!"
         }
     }
 }
