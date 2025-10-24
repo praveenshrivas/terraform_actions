@@ -1,21 +1,35 @@
 pipeline {
     agent any
+
     stages {
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
                 checkout scm
             }
         }
 
-        stage('Terraform Init') {
+        stage('Initialize Terraform') {
             steps {
                 sh 'terraform init'
             }
         }
 
-        stage('Terraform Plan') {
+        stage('Validate Terraform') {
+            steps {
+                sh 'terraform validate'
+            }
+        }
+
+        stage('Plan Terraform') {
             steps {
                 sh 'terraform plan'
+            }
+        }
+
+        stage('Apply Terraform (manual confirm)') {
+            steps {
+                input message: 'Do you want to apply the plan?'
+                sh 'terraform apply -auto-approve'
             }
         }
     }
